@@ -5,8 +5,8 @@ My ZSH Config
 ## Setup
 
 ```
-
-tar -cvzf zsh.tar.gz ~/
+tar -xzf zsh.tar.gz
+cp -r .zsh ~/
 cp .zshrc ~/
 ```
 
