@@ -1,0 +1,128 @@
+#
+# # ex - archive extractor
+# # usage: ex <file>
+ex ()
+{
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1   ;;
+      *.tar.gz)    tar xzf $1   ;;
+      *.bz2)       bunzip2 $1   ;;
+      *.rar)       unrar x $1     ;;
+      *.gz)        gunzip $1    ;;
+      *.tar)       tar xf $1    ;;
+      *.tbz2)      tar xjf $1   ;;
+      *.tgz)       tar xzf $1   ;;
+      *.zip)       unzip $1     ;;
+      *.Z)         uncompress $1;;
+      *.7z)        7z x $1      ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+function remind () {
+  local COUNT="$#"
+  local COMMAND="$1"
+  local MESSAGE="$1"
+  local OP="$2"
+  shift 2>/dev/null
+  local WHEN="$@"
+  # Display help if no parameters or help command
+  if [[ $COUNT -eq 0 || "$COMMAND" == "help" || "$COMMAND" == "--help" || "$COMMAND" == "-h" ]]; then
+    echo "COMMAND"
+    echo "    remind <message> <time>"
+    echo "    remind <command>"
+    echo
+    echo "DESCRIPTION"
+    echo "    Displays notification at specified time"
+    echo
+    echo "EXAMPLES"
+    echo '    remind "Hi there" now'
+    echo '    remind "Time to wake up" in 5 minutes'
+    echo '    remind "Dinner" in 1 hour'
+    echo '    remind "Take a break" at noon'
+    echo '    remind "Are you ready?" at 13:00'
+    echo '    remind list'
+    echo '    remind clear'
+    echo '    remind help'
+    echo
+    return
+  fi
+  # Check presence of AT command
+  if ! which at >/dev/null; then
+    echo "remind: AT utility is required but not installed on your system. Install it with your package manager of choice, for example 'sudo apt install at'."
+    return
+  fi
+  # Run commands: list, clear
+  if [[ $COUNT -eq 1 ]]; then
+    if [[ "$COMMAND" == "list" ]]; then
+      at -l
+    elif [[ "$COMMAND" == "clear" ]]; then
+      at -r $(atq | cut -f1)
+    else
+      echo "remind: unknown command $COMMAND. Type 'remind' without any parameters to see syntax."
+    fi
+    return
+  fi
+  # Determine time of notification
+  if [[ "$OP" == "in" ]]; then
+    local TIME="now + $WHEN"
+  elif [[ "$OP" == "at" ]]; then
+    local TIME="$WHEN"
+  elif [[ "$OP" == "now" ]]; then
+    local TIME="now"
+  else
+    echo "remind: invalid time operator $OP"
+    return
+  fi
+  # Schedule the notification
+  echo "notify-send '$MESSAGE' -a Reminder -u critical" | at $TIME 2>/dev/null
+  echo "Notification scheduled at $TIME"
+}
+
+export EDITOR=nano
+
+
+#alias ls='ls --color=auto'
+    # ls, the common ones I use a lot shortened for rapid fire usage
+#alias l='ls -lFh --color=auto'     #size,show type,human readable
+#alias la='ls -lAFh --color=auto'   #long list,show almost all,show type,human readable
+#alias lr='ls -tRFh --color=auto'   #sorted by date,recursive,show type,human readable
+#alias lt='ls -ltFh --color=auto'   #long list,sorted by date,show type,human readable
+#alias ll='ls -l --color=auto'      #long list
+#alias ldot='ls -ld .* --color=auto'
+#alias lS='ls -1FSsh --color=auto'
+#alias lart='ls -1Fcart --color=auto'
+#alias lrt='ls -1Fcrt --color=auto'
+
+# BAT
+alias cat='bat'
+
+# LSD
+alias ls='lsd'
+alias l='ls -lFh'
+alias la='lsd -lAFh'
+alias lS='ls -lSr'
+
+alias rm='rm -i'
+alias cp='cp -riv'
+alias mv='mv -iv'
+alias mkdir='mkdir -vp'
+alias ip='ip --color'
+
+alias h='history'
+
+alias clipboard='xclip -selection clipboard'
+
+alias davinci_transcode="mkdir transcoded; for i in *.mp4; do ffmpeg -i "$i" -vcodec mjpeg -q:v 2 -acodec pcm_s16be -q:a 0 -f mov "transcoded/${i%.*}.mov"; done"
+
+alias restart_plasma="kquitapp5 plasmashell || killall plasmashell && kstart5 plasmashell"
+
+alias restart_network="sudo modprobe -r r8168 && sleep 2 && sudo modprobe r8168"
+
+alias restart_pipewire="systemctl --user restart pipewire.service pipewire-pulse.socket"
+
+alias reboot_windows="sudo efibootmgr -n 0005 && reboot"
