@@ -48,11 +48,13 @@ bindkey '^H' backward-kill-word			# ctrl + backspace
 # Load ; should be last. (works on manjaro)
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
-#source /usr/share/autojump/autojump.zsh 2>/dev/null
 
-# works on kde neon
+# works on ubuntu, debian
 #source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
 #source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+#ln -s $(which fdfind) ~/.local/bin/fd
+#mkdir -p ~/.local/bin
+#ln -s /usr/bin/batcat ~/.local/bin/bat
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en
